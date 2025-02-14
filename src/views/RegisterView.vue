@@ -20,7 +20,7 @@
   
   <script setup lang="ts">
   import { ref } from "vue";
-  import { register } from "../../backend/firebase"; // Importa la función de registro desde el backend
+  import { register } from "../backend/firebase"; // Importa la función de registro desde el backend
   import { useRouter } from "vue-router";
   
   const email = ref("");

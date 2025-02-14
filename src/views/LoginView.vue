@@ -20,7 +20,7 @@
   
   <script setup lang="ts">
   import { ref } from "vue";
-  import { login } from "../../backend/firebase"; // Importa la función de login desde el backend
+  import { login } from "../backend/firebase"; // Importa la función de login desde el backend
   import { useRouter } from "vue-router";
   
   const email = ref("");

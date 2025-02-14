@@ -7,7 +7,7 @@
   </template>
   
   <script setup lang="ts">
-  import { logout } from "../../backend/firebase"; // Importa la función de logout desde el backend
+  import { logout } from "../backend/firebase"; // Importa la función de logout desde el backend
   import { useRouter } from "vue-router";
   
   const router = useRouter();
