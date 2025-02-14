@@ -12,11 +12,8 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
-<<<<<<< HEAD
-=======
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3",
->>>>>>> breyner
     "firebase": "^11.3.1",
     "pinia": "^2.3.1",
     "vue": "^3.5.13",
