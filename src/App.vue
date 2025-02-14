@@ -19,14 +19,20 @@
           <ul class="navbar-nav ms-auto">
             <!-- Mostrar "Iniciar Sesión" y "Registrarse" si el usuario no está autenticado -->
             <li class="nav-item" v-if="!isAuthenticated">
-              <router-link to="/login" class="nav-link">Iniciar Sesión</router-link>
+              <router-link to="/login" class="nav-link"
+                >Iniciar Sesión</router-link
+              >
             </li>
             <li class="nav-item" v-if="!isAuthenticated">
-              <router-link to="/register" class="nav-link">Registrarse</router-link>
+              <router-link to="/register" class="nav-link"
+                >Registrarse</router-link
+              >
             </li>
             <!-- Mostrar "Cerrar Sesión" si el usuario está autenticado -->
             <li class="nav-item" v-if="isAuthenticated">
-              <button @click="logout" class="nav-link btn btn-link">Cerrar Sesión</button>
+              <button @click="logout" class="nav-link btn btn-link">
+                Cerrar Sesión
+              </button>
             </li>
           </ul>
         </div>
@@ -42,7 +48,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import { auth } from "./backend/firebase"; // Importa la autenticación de Firebase
+import { auth } from "@/infrastructure/firebase/firebaseConfig"; // Importa la autenticación de Firebase
 import { useRouter } from "vue-router";
 
 const router = useRouter();
