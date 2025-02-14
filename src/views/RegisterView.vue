@@ -3,7 +3,7 @@
     <div class="card p-4 shadow-lg rounded" style="width: 350px;">
       <div class="card-body">
         <h2 class="text-center mb-4">Registro</h2>
-        <form @submit.prevent="register">
+        <form @submit.prevent="handleRegister"> <!-- ⚠ Cambiamos register por handleRegister -->
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control" id="email" v-model="email" required />
@@ -24,19 +24,20 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { register } from "../backend/firebase"; // Importa la función de registro desde el backend
+import { register as registerUser } from "../backend/firebase"; // ⚠ Renombramos la función importada
 import { useRouter } from "vue-router";
 
 const email = ref("");
 const password = ref("");
 const router = useRouter();
 
-const register = async () => {
+const handleRegister = async () => { // ⚠ Cambiamos el nombre de la función local
   try {
-    await register(email.value, password.value); // Llama a la función de registro del backend
-    router.push("/home"); // Redirige al Home
+    await registerUser(email.value, password.value); // ⚠ Usamos registerUser en vez de register
+    router.push("/home");
   } catch (error) {
-    alert(error.message); // Muestra un mensaje de error
+    alert(error.message);
   }
 };
 </script>
+
