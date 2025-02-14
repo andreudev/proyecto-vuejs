@@ -64,7 +64,7 @@ const logout = async () => {
   try {
     await auth.signOut(); // Cierra la sesión en Firebase
     router.push("/login"); // Redirige al usuario a la página de inicio de sesión
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error al cerrar sesión:", error.message);
   }
 };
