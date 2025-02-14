@@ -1,85 +1,110 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <div id="app">
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <router-link to="/" class="navbar-brand">Genins</router-link>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <!-- Mostrar "Iniciar Sesión" y "Registrarse" si el usuario no está autenticado -->
+            <li class="nav-item" v-if="!isAuthenticated">
+              <router-link to="/login" class="nav-link">Iniciar Sesión</router-link>
+            </li>
+            <li class="nav-item" v-if="!isAuthenticated">
+              <router-link to="/register" class="nav-link">Registrarse</router-link>
+            </li>
+            <!-- Mostrar "Cerrar Sesión" si el usuario está autenticado -->
+            <li class="nav-item" v-if="isAuthenticated">
+              <button @click="logout" class="nav-link btn btn-link">Cerrar Sesión</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+    <!-- Contenedor principal para las vistas -->
+    <div class="container mt-4">
+      <router-view />
     </div>
-  </header>
-
-  <RouterView />
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue";
+import { auth } from "./backend/firebase"; // Importa la autenticación de Firebase
+import { useRouter } from "vue-router";
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+const router = useRouter();
+const isAuthenticated = ref(false); // Estado para verificar si el usuario está autenticado
 
-nav {
-  width: 100%;
-  font-size: 12px;
+// Verifica el estado de autenticación del usuario
+const checkAuth = () => {
+  isAuthenticated.value = !!auth.currentUser; // Actualiza el estado de autenticación
+};
+
+// Cierra la sesión del usuario
+const logout = async () => {
+  try {
+    await auth.signOut(); // Cierra la sesión en Firebase
+    router.push("/login"); // Redirige al usuario a la página de inicio de sesión
+  } catch (error) {
+    console.error("Error al cerrar sesión:", error.message);
+  }
+};
+
+// Escucha cambios en el estado de autenticación
+onMounted(() => {
+  checkAuth(); // Verifica el estado de autenticación al cargar la aplicación
+  auth.onAuthStateChanged(() => checkAuth()); // Escucha cambios en el estado de autenticación
+});
+
+// Limpia el listener al desmontar el componente
+onUnmounted(() => {
+  auth.onAuthStateChanged(() => {}); // Limpia el listener
+});
+</script>
+
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  margin-top: 2rem;
+  color: #2c3e50;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+.navbar {
+  margin-bottom: 20px;
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+.navbar-brand {
+  font-weight: bold;
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+.nav-link {
+  cursor: pointer;
 }
 
-nav a:first-of-type {
-  border: 0;
+.btn-link {
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.btn-link:hover {
+  color: rgba(255, 255, 255, 0.75);
 }
 </style>
