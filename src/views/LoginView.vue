@@ -3,7 +3,7 @@
     <div class="card p-4 shadow-lg rounded" style="width: 350px;">
       <div class="card-body">
         <h2 class="text-center mb-4">Iniciar Sesión</h2>
-        <form @submit.prevent="login">
+        <form @submit.prevent="handleLogin"> <!-- ⚠ Cambiamos login por handleLogin -->
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control" id="email" v-model="email" required />
@@ -24,19 +24,20 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { login } from "../backend/firebase"; // Importa la función de login desde el backend
+import { login as loginUser } from "../backend/firebase"; // ⚠ Renombramos la función importada
 import { useRouter } from "vue-router";
 
 const email = ref("");
 const password = ref("");
 const router = useRouter();
 
-const login = async () => {
+const handleLogin = async () => { // ⚠ Cambiamos el nombre de la función
   try {
-    await login(email.value, password.value); // Llama a la función de login del backend
-    router.push("/home"); // Redirige al Home
+    await loginUser(email.value, password.value); // ⚠ Usamos loginUser en vez de login
+    router.push("/home");
   } catch (error) {
-    alert(error.message); // Muestra un mensaje de error
+    alert(error.message);
   }
 };
 </script>
+
