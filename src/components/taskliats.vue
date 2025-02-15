@@ -1,9 +1,5 @@
 <template>
-  
     <div class="task-container">
-
-      <h2>Bienvenido al Home</h2>
-      <p>Has iniciado sesión correctamente.</p>
       <!-- Botón para agregar una tarea -->
       <button class="add-task-btn" @click="showAddTaskModal = true">+ Agregar una tarea</button>
   
@@ -40,20 +36,11 @@
         </div>
       </div>
     </div>
+  </template>
   
-  <div class="container mt-5">
-   
-
-    <button @click="logout" class="btn btn-danger">Cerrar Sesión</button>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { useRouter } from "vue-router";
-import { auth } from "../infrastructure/firebase/firebaseConfig";
-
-import { ref, computed } from 'vue';
-  import { useTaskStore } from '../store/taskStore';
+  <script setup lang="ts">
+  import { ref, computed } from 'vue';
+  import { useTaskStore } from '../stores/taskStore';
   
   // Acceder al store de tareas
   const taskStore = useTaskStore();
@@ -118,19 +105,9 @@ import { ref, computed } from 'vue';
     taskText.value = '';
     editingTask.value = null;
   };
-const router = useRouter();
-
-const logout = async () => {
-  try {
-    await auth.signOut();
-    router.push("/login");
-  } catch (error) {
-    console.error("Error al cerrar sesión:", (error as any).message);
-  }
-};
-</script>
-
-<style scoped>
+  </script>
+  
+  <style scoped>
   .task-container {
     max-width: 600px;
     margin: 0 auto;

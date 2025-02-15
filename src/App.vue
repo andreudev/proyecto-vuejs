@@ -50,6 +50,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { auth } from "@/infrastructure/firebase/firebaseConfig"; // Importa la autenticación de Firebase
 import { useRouter } from "vue-router";
+import TaskList from './components/taskliats.vue';
 
 const router = useRouter();
 const isAuthenticated = ref(false); // Estado para verificar si el usuario está autenticado
