@@ -1,32 +1,102 @@
-import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { db } from "../backend/firebase"; // Importa la instancia de Firestore
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 
-export const useTaskStore = defineStore('taskStore', () => {
-  const tasks = ref([]);
-  const editingTask = ref(null);
+// Define el tipo de una tarea
+interface Task {
+  id: string;
+  text: string;
+  completed: boolean;
+  inProgress: boolean;
+  createdAt: Date;
+  userId: string; // ID del usuario que creó la tarea
+}
 
-  const addTask = (task) => {
-    tasks.value.push({
-      id: Date.now(),
-      text: task,
-      completed: false,
-      createdAt: new Date(), // Agregamos la fecha de creación
-    });
-  };
+export const useTaskStore = defineStore("task", {
+  state: () => ({
+    tasks: [] as Task[], // Tareas del usuario actual
+    allTasks: [] as Task[], // Todas las tareas (para moderadores y administradores)
+  }),
+  actions: {
+    // Cargar tareas del usuario actual
+    async loadUserTasks(userId: string) {
+      const q = query(collection(db, "tasks"), where("userId", "==", userId));
+      onSnapshot(q, (querySnapshot) => {
+        this.tasks = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Task[];
+      });
+    },
 
-  const toggleTask = (id) => {
-    const task = tasks.value.find((t) => t.id === id);
-    if (task) task.completed = !task.completed;
-  };
+    // Cargar todas las tareas (para moderadores y administradores)
+    async loadAllTasks() {
+      const q = query(collection(db, "tasks"));
+      onSnapshot(q, (querySnapshot) => {
+        this.allTasks = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Task[];
+      });
+    },
 
-  const deleteTask = (id) => {
-    tasks.value = tasks.value.filter((t) => t.id !== id);
-  };
+    // Agregar una nueva tarea
+    async addTask(text: string, userId: string) {
+      try {
+        await addDoc(collection(db, "tasks"), {
+          text,
+          completed: false,
+          inProgress: false,
+          createdAt: new Date(),
+          userId,
+        });
+      } catch (error) {
+        console.error("Error al agregar tarea:", error);
+      }
+    },
 
-  const editTask = (id, newText) => {
-    const task = tasks.value.find((t) => t.id === id);
-    if (task) task.text = newText;
-  };
+    // Editar una tarea
+    async editTask(taskId: string, newText: string) {
+      try {
+        await updateDoc(doc(db, "tasks", taskId), {
+          text: newText,
+        });
+      } catch (error) {
+        console.error("Error al editar tarea:", error);
+      }
+    },
 
-  return { tasks, addTask, toggleTask, deleteTask, editTask, editingTask };
+    // Eliminar una tarea
+    async deleteTask(taskId: string) {
+      try {
+        await deleteDoc(doc(db, "tasks", taskId));
+      } catch (error) {
+        console.error("Error al eliminar tarea:", error);
+      }
+    },
+
+    // Marcar/desmarcar una tarea como completada
+    async toggleTask(taskId: string) {
+      try {
+        const task = this.tasks.find((t) => t.id === taskId);
+        if (task) {
+          await updateDoc(doc(db, "tasks", taskId), {
+            completed: !task.completed,
+          });
+        }
+      } catch (error) {
+        console.error("Error al marcar tarea como completada:", error);
+      }
+    },
+  },
 });

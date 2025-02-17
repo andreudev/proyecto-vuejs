@@ -1,10 +1,9 @@
 <template>
   <div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="card p-4 shadow-lg rounded" style="width: 350px">
+    <div class="card p-4 shadow-lg rounded" style="width: 350px;">
       <div class="card-body">
         <h2 class="text-center mb-4">Iniciar Sesión</h2>
         <form @submit.prevent="handleLogin">
-          <!-- Campo de Email -->
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
             <input
@@ -16,7 +15,6 @@
               required
             />
           </div>
-          <!-- Campo de Contraseña -->
           <div class="mb-3">
             <label for="password" class="form-label">Contraseña</label>
             <input
@@ -24,20 +22,15 @@
               class="form-control"
               id="password"
               v-model="password"
-              placeholder="Ingresa tu contraseña 6 digitos"
+              placeholder="Ingresa tu contraseña"
               required
               minlength="6"
             />
           </div>
-          <!-- Botón de Iniciar Sesión -->
-          <button type="submit" class="btn btn-primary w-100">
-            Iniciar Sesión
-          </button>
+          <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
         </form>
-        <!-- Enlace para Registrarse -->
         <p class="mt-3 text-center">
-          ¿No tienes una cuenta?
-          <router-link to="/register">Regístrate</router-link>
+          ¿No tienes una cuenta? <router-link to="/register">Regístrate</router-link>
         </p>
       </div>
     </div>
@@ -46,33 +39,26 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { AuthUseCase } from "@/applications/useCases/AuthUseCase";
-import { UserRepositoryImpl } from "@/infrastructure/repository/UserRepositoryImpl";
-import { AuthRepositoryImpl } from "@/infrastructure/repository/AuthRepositoryImpl";
+import { login } from "../backend/firebase"; // Importa la función login desde firebase.ts
 import { useRouter } from "vue-router";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "../store/authStore";
 
 const email = ref("");
 const password = ref("");
 const router = useRouter();
 const authStore = useAuthStore();
 
-const authRepository = new AuthRepositoryImpl();
-const userRepository = new UserRepositoryImpl();
-const authUseCase = new AuthUseCase(authRepository, userRepository);
-
 const handleLogin = async () => {
   try {
-    const user = await authUseCase.login(email.value, password.value);
+    const user = await login(email.value, password.value);
     authStore.setUser(user);
-    router.push("/home");
+    router.push("/user"); // Redirige al dashboard del usuario
   } catch (error) {
-    console.error(error);
+    alert("Error al iniciar sesión: " + error.message);
   }
 };
 </script>
-
-<style>
+<style scoped>
 .btn-primary {
   background-color: #007bff;
   border: none;
